@@ -16,7 +16,7 @@ const loggingFormat = printf(({ level, message, timestamp, ...meta }) => {
   const metaString = Object.keys(meta).length
     ? `\n ${JSON.stringify(meta)}`
     : '';
-  return ` ${timestamp} : [${level}] : ${message} : ${metaString}`;
+  return ` ${timestamp} : [${level}] : ${message} ${metaString}`;
 });
 
 // logging transport options
