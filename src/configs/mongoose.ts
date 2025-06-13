@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import type { ConnectOptions } from 'mongoose';
-import config from '@/config';
+import config from '@/configs';
 import logger from '@/lib/winston';
 
 // Connection options for mongodb

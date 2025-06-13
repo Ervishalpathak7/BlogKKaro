@@ -1,8 +1,7 @@
 /**
-  * @copyright 2025 Vishal Pathak
-  * @license Apache-2.0
-*/
-
+ * @copyright 2025 Vishal Pathak
+ * @license Apache-2.0
+ */
 
 // node_modules
 import express from 'express';
@@ -12,16 +11,17 @@ import helmet from 'helmet';
 import compression from 'compression';
 
 // custom_modules
-import config from '@/config';
+import config from '@/configs';
 import logger from '@/lib/winston';
-import rateLimiter from '@/config/rateLimit';
-import { connectDb, disconnectDb } from '@/config/mongoose';
+import rateLimiter from '@/configs/rateLimit';
+import { connectDb, disconnectDb } from '@/configs/mongoose';
+import router from '@/routes';
 
 // initialise the app with express
 const app = express();
 
 // Server instance
-let server: ReturnType<typeof app.listen>; 
+let server: ReturnType<typeof app.listen>;
 
 // cors configuration
 app.use(
@@ -44,28 +44,33 @@ app.use(
   })
 );
 
-// Enable Json and url-encoded data parsing 
+// Enable Json and url-encoded data parsing
 app.use(express.json());
-app.use(express.urlencoded({ extended : true}));
+app.use(express.urlencoded({ extended: true }));
 
 // Enable cookie-parsing
 app.use(cookieParser());
 
 // Enable compression for response bodies
-app.use(compression({
-  threshold : 1024,
-}));
+app.use(
+  compression({
+    threshold: 1024,
+  })
+);
 
-// Enable security headers 
+// Enable security headers
 app.use(helmet());
 
-// Enable Rate limiting 
+// Enable Rate limiting
 app.use(rateLimiter);
 
+// Register routes
+app.use('/api', router);
+
 // Start the server with immidiately invoked async function (IIFE)
-(async () => {
+( async () => {
   try {
-    // connect database 
+    // connect database
     await connectDb();
     server = app.listen(config.PORT, () => {
       logger.info(`Server started running on http://localhost:${config.PORT}`);
@@ -73,8 +78,7 @@ app.use(rateLimiter);
   } catch (error) {}
 })();
 
-
-// Handle gracefull shutdown 
+// Handle gracefull shutdown
 const handleGracefulShutdown = async () => {
   try {
     logger.warn('Server is shutting down gracefully...');
@@ -90,14 +94,13 @@ const handleGracefulShutdown = async () => {
     });
     // Disconnect database
     await disconnectDb();
-
     logger.info('Shutdown complete..');
     process.exit(0);
   } catch (err) {
-    logger.error('🔥 Error during shutdown:', err);
+    logger.error('Error during shutdown:', err);
     process.exit(1);
   }
 };
 
-process.on('SIGINT', handleGracefulShutdown);   // Ctrl + C
-process.on('SIGTERM', handleGracefulShutdown);  // Termination signal (e.g. from Docker)
+process.on('SIGINT', handleGracefulShutdown); // Ctrl + C
+process.on('SIGTERM', handleGracefulShutdown); // Termination signal 
