@@ -15,9 +15,11 @@ import compression from 'compression';
 import config from '@/config';
 import logger from '@/lib/winston';
 import rateLimiter from '@/config/rateLimit';
+import { connectDb, disconnectDb } from '@/config/mongoose';
 
 // initialise the app with express
 const app = express();
+
 // Server instance
 let server: ReturnType<typeof app.listen>; 
 
@@ -63,6 +65,8 @@ app.use(rateLimiter);
 // Start the server with immidiately invoked async function (IIFE)
 (async () => {
   try {
+    // connect database 
+    await connectDb();
     server = app.listen(config.PORT, () => {
       logger.info(`Server started running on http://localhost:${config.PORT}`);
     });
@@ -84,6 +88,8 @@ const handleGracefulShutdown = async () => {
         resolve();
       });
     });
+    // Disconnect database
+    await disconnectDb();
 
     logger.info('Shutdown complete..');
     process.exit(0);
