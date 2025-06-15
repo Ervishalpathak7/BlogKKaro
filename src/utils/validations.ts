@@ -97,4 +97,30 @@ export const logoutValidation = [
     .bail()
     .isJWT()
     .withMessage('Invalid refresh token '),
-]
+];
+
+export const updateUserValidation = [
+  body('firstName')
+    .optional()
+    .trim()
+    .isLength({ max: 20 })
+    .withMessage('First name must be between 2 and 20 characters'),
+  body('lastName')
+    .optional()
+    .trim()
+    .isLength({ max: 20 })
+    .withMessage('Last name must be between 2 and 20 characters'),
+  body('links')
+    .optional()
+    .isObject()
+    .withMessage('Links should be an object')
+    .custom((links) => {
+      const keys = ['x', 'website', 'linkedin'];
+      for (const key of keys) {
+        if (links[key] && typeof links[key] !== 'string') {
+          throw new Error(`${key} must be a string`);
+        }
+      }
+      return true;
+    }),
+];
