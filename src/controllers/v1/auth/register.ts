@@ -47,8 +47,8 @@ const registerController = async (
     });
 
     // generate access token and refresh token
-    const accessToken = generateAccessToken(user._id.toString());
-    const refreshToken = generateRefreshToken(user._id.toString());
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
 
     // Save refresh token
     await RefreshToken.create({
