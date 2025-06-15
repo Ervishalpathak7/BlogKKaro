@@ -20,9 +20,9 @@ export const registerValidations = [
     .withMessage('Email is required')
     .isLength({ max: 100 })
     .withMessage('Email must be less than 100 characters')
-    .normalizeEmail()
     .isEmail()
     .withMessage('Enter Valid Email')
+    .toLowerCase()
     .custom(async (value) => {
       const exists = await User.exists({ email: value });
       if (exists) throw new Error('Email already registered');
@@ -49,9 +49,9 @@ export const loginValidation = [
     .withMessage('Email is required')
     .isLength({ max: 100 })
     .withMessage('Email must be less than 100 characters')
-    .normalizeEmail()
     .isEmail()
-    .withMessage('Enter Valid Email'),
+    .withMessage('Enter Valid Email')
+    .toLowerCase(),
   body('password')
     .trim()
     .notEmpty()
