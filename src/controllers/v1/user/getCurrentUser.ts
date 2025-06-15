@@ -16,6 +16,7 @@ const getCurrentUserController = async (
       res.status(404).json({
         status: 'error',
         message: 'User not found',
+        data : {}
       });
       return;
     }
