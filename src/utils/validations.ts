@@ -1,6 +1,5 @@
-import { body, cookie } from 'express-validator';
+import { body, cookie, header } from 'express-validator';
 import User from '@/models/user';
-import logger from '@/lib/winston';
 
 export const registerValidations = [
   body('firstName')
@@ -25,8 +24,8 @@ export const registerValidations = [
     .isEmail()
     .withMessage('Enter Valid Email')
     .custom(async (value) => {
-        const exists = await User.exists({ email: value });
-        if (exists) throw new Error('Email already registered');
+      const exists = await User.exists({ email: value });
+      if (exists) throw new Error('Email already registered');
       return true;
     }),
   body('password')
@@ -61,12 +60,32 @@ export const loginValidation = [
     .withMessage('Password must be between 8 and 64 characters'),
 ];
 
-
 export const refreshTokenValidation = [
-    cookie('refreshToken')
+  cookie('refreshToken')
     .notEmpty()
     .withMessage('Refresh token required')
     .isJWT()
     .withMessage('Invalid refresh token '),
 ];
 
+export const logoutValidation = [
+  header('Authorization')
+    .notEmpty()
+    .withMessage('Access token required')
+    .bail()
+    .custom((value) => {
+      if (!value.startsWith('Bearer ')) {
+        throw new Error('Malformed Authorization header');
+      }
+      const token = value.split(' ')[1];
+      if (!token) {
+        throw new Error('Token not provided');
+      }
+      const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/;
+      if (!jwtRegex.test(token)) {
+        throw new Error('Invalid JWT token');
+      }
+
+      return true;
+    }),
+];
