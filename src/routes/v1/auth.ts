@@ -5,6 +5,7 @@ import registerController from '@/controllers/v1/auth/register';
 import authenticationMiddleware from '@/middlewares/authentication';
 import validationMiddleware from '@/middlewares/validation';
 import {
+  authenticationValidation,
   loginValidation,
   logoutValidation,
   refreshTokenValidation,
@@ -42,6 +43,7 @@ authRouter.post(
 // logout route
 authRouter.post(
   '/logout',
+  authenticationValidation,
   logoutValidation,
   validationMiddleware,
   authenticationMiddleware,
