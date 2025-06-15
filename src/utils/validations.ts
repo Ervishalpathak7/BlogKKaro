@@ -68,7 +68,7 @@ export const refreshTokenValidation = [
     .withMessage('Invalid refresh token '),
 ];
 
-export const logoutValidation = [
+export const authenticationValidation = [
   header('Authorization')
     .notEmpty()
     .withMessage('Access token required')
@@ -89,3 +89,12 @@ export const logoutValidation = [
       return true;
     }),
 ];
+
+export const logoutValidation = [
+  cookie('refreshToken')
+    .notEmpty()
+    .withMessage('Refresh token required')
+    .bail()
+    .isJWT()
+    .withMessage('Invalid refresh token '),
+]
